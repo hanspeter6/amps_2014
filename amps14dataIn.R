@@ -16,20 +16,20 @@ save(print_14, electr_14, internet_14, demogrs_14, personal_14, lsm_14, lifestag
 
 load("input_14.RData")
 # 
-# print_14_labels <- readLines("/Users/HansPeter/Dropbox/Statistics/UCTDataScience/Thesis/AMPS_2014/csv/metadata/variable_labels/amps-2014-newspaper-magazine-readership-v1.1_variable_labels.txt")
-# electr_14_labels <- readLines("/Users/HansPeter/Dropbox/Statistics/UCTDataScience/Thesis/AMPS_2014/csv/metadata/variable_labels/amps-2014-electronic-media-v1.1_variable_labels.txt")
-# internet_14_labels <- readLines("/Users/HansPeter/Dropbox/Statistics/UCTDataScience/Thesis/AMPS_2014/csv/metadata/variable_labels/amps-2014-cellphone-and-internet-v1.1_variable_labels.txt")
-# demogrs_14_labels <- readLines("/Users/HansPeter/Dropbox/Statistics/UCTDataScience/Thesis/AMPS_2014/csv/metadata/variable_labels/amps-2014-demographics-v1.1_variable_labels.txt")
-# personal_14_labels <- readLines("/Users/HansPeter/Dropbox/Statistics/UCTDataScience/Thesis/AMPS_2014/csv/metadata/variable_labels/amps-2014-personal-v1.2_variable_labels.txt")
-# lsm_14_labels <- readLines("/Users/HansPeter/Dropbox/Statistics/UCTDataScience/Thesis/AMPS_2014/csv/metadata/variable_labels/amps-2014-lsm-saarf-segmentations-v1.1_variable_labels.txt")
-# lifestage_14_labels <- readLines("/Users/HansPeter/Dropbox/Statistics/UCTDataScience/Thesis/AMPS_2014/csv/metadata/variable_labels/amps-2014-lifestage-v1.1_variable_labels.txt")
-# attitudes_14_labels <- readLines("/Users/HansPeter/Dropbox/Statistics/UCTDataScience/Thesis/AMPS_2014/csv/metadata/variable_labels/amps-2014-attitudes-v1.1_variable_labels.txt")
+print_14_labels <- readLines("stata/amps_2014_print_variable_labels.txt")
+electr_14_labels <- readLines("stata/amps_2014_electonic_variable_labels.txt")
+internet_14_labels <- readLines("stata/amps_2014_internet_variable_labels.txt")
+demogrs_14_labels <- readLines("stata/amps_2014_demographics_variable_labels.txt")
+personal_14_labels <- readLines("stata/amps_2014_personal_variable_labels.txt")
+lsm_14_labels <- readLines("stata/amps_2014_lsm_variable_labels.txt")
+lifestage_14_labels <- readLines("stata/amps_2014_lifestages_variable_labels.txt")
+attitudes_14_labels <- readLines("stata/amps_2014_attitudes_variable_labels.txt")
 # 
 # 
 # # 
-# save(print_14_labels, electr_14_labels, internet_14_labels, demogrs_14_labels, personal_14_labels, lsm_14_labels, lifestage_14_labels, attitudes_14_labels, file = "labels_14.RData")
+save(print_14_labels, electr_14_labels, internet_14_labels, demogrs_14_labels, personal_14_labels, lsm_14_labels, lifestage_14_labels, attitudes_14_labels, file = "labels_14.RData")
 # 
-# load("labels_14.RData")
+load("labels_14.RData")
 
 
 
@@ -44,16 +44,34 @@ load("input_14.RData")
 
 ## 1st Print (newspapers and magazines) Media Set
 
-# names_print_14 <- str_subset(print_14_labels, 'Number of different issues usually read or page through') %>%
-#         str_replace('.+\\s-', '')
+names_print_14 <- str_subset(print_14_labels, 'Number of different issues usually read') %>%
+        str_replace('.+\\s-', '') %>%
+        str_trim()
+
+# check_2012 <- readRDS("names_print_12_copy.rds")
+# 
+# ind_correct_12 <- which(check_2012 %in% names_print_14)
+# 
+# diff_12 <- check_2012[-ind_correct_12]
+# 
+# ind_correct_14 <- which(names_print_14 %in% check_2012)
+# 
+# diff_14 <- names_print_14[-ind_correct_14]
+# 
+# fix(diff_14)
+# 
+# names_print_14[-ind_correct_14] <- diff_14
+
+
+fix(names_print_14)
 
 saveRDS(names_print_14, "names_print_14.rds")
 
 names_print_14 <- readRDS("names_print_14.rds")
 
-names_dailies_14 <- names_print_14[1:22]
-names_biweeklies_14 <- names_print_14[23]
-names_weeklies_14 <- names_print_14[24:52]
+# names_dailies_14 <- names_print_14[1:22]
+# names_biweeklies_14 <- names_print_14[23]
+# names_weeklies_14 <- names_print_14[24:52]
 
 # # NBNB: Not community papers in 2014...
 # names_community_cape_town <- names_print[40:51]
@@ -63,29 +81,29 @@ names_weeklies_14 <- names_print_14[24:52]
 # names_community_Jhb <- names_print[69]
 # names_community_ERand <- names_print[70:71]
 # names_community_KZn <- names_print[72:74]
-
-names_mags_weekly_14 <- names_print_14[53:65]
-names_fortnightly_mags_14 <- names_print_14[66:67]
-names_monthly_news_14 <- names_print_14[68:69]
-names_monthly_mags_14 <- names_print_14[70:147]
-
-names_alt_monthly_14 <- names_print_14[150:161]
-names_quarterly_mags_14 <- names_print_14[164:168]
-
-names_monthly_store_mags_14 <- names_print_14[148:149]
-names_alt_month_store_mags_14 <- names_print_14[162:163]
-names_quarterly_store_mags_14 <- names_print_14[169:172]
+# 
+# names_mags_weekly_14 <- names_print_14[53:65]
+# names_fortnightly_mags_14 <- names_print_14[66:67]
+# names_monthly_news_14 <- names_print_14[68:69]
+# names_monthly_mags_14 <- names_print_14[70:147]
+# 
+# names_alt_monthly_14 <- names_print_14[150:161]
+# names_quarterly_mags_14 <- names_print_14[164:168]
+# 
+# names_monthly_store_mags_14 <- names_print_14[148:149]
+# names_alt_month_store_mags_14 <- names_print_14[162:163]
+# names_quarterly_store_mags_14 <- names_print_14[169:172]
 
 # create print dataset:
 issues_14 <- print_14[,str_detect(names(print_14), 'ca[345678]co\\d{2}')]
-issues_14 <- issues_14[,-which(names(issues_14) == "ca6co40")] # get rid of one variable name = '0'. All NAs
-names(issues_14) <- names_print_14
-
 
 saveRDS(issues_14, "issues_14.rds")
 
 thorough_14 <- print_14[,str_detect(names(print_14), 'ca((34)|(35)|(36)|(37)|(38)|(39))co\\d{2}')]
-thorough_14 <- thorough_14[,-which(names(thorough_14) == 'ca38co50'| names(thorough_14) == 'ca38co51')] # get rid of six-week mags (zigzag and saltwater girl) not in issues
+
+# one extra in throrough.. Elle Decorations
+
+thorough_14 <- thorough_14[,-which(names(thorough_14) == 'ca38co50')] # get rid of elle decorations
 
 names(thorough_14) <- names_print_14
 
@@ -104,8 +122,8 @@ saveRDS(print_engagement_14, "print_engagement_14.rds")
 
 print_engagement_14 <- readRDS("print_engagement_14.rds")
 
-newspapers_engagement_14 <- print_engagement_14[,c(1:52,68,69)]
-magazines_engagement_14 <- print_engagement_14[,c(53:67,70:172)]
+newspapers_engagement_14 <- print_engagement_14[,c(1:50)]
+magazines_engagement_14 <- print_engagement_14[,c(51:160)]
 
 saveRDS(newspapers_engagement_14, "newspapers_engagement_14.rds")
 saveRDS(magazines_engagement_14, "magazines_engagement_14.rds")
@@ -116,31 +134,41 @@ newspapers_engagement_14 <- readRDS("newspapers_engagement_14.rds")
 ## 2nd Electronic Media Set
 # RADIO
 
+# use 4 weeks for names vector
 names_radio_14_4w <- electr_14_labels %>%
         str_subset('ca64co\\d{2}_\\d') %>%
-        str_replace('.+listened.+4\\sweeks\\s-\\s','')
-names_radio_14_4w <- names_radio_14_4w[-c(98,99)] # get rid of "unsure" and "none"
+        str_replace('.+\\s-\\s','') %>%
+        str_trim()
+# get rid of tail lines
+names_radio_14_4w <- names_radio_14_4w[1:100] # get rid of summaries & "unsure" &"none"
 
-names_radio_14_7 <- electr_14_labels %>%
-        str_subset('ca65co\\d{2}_\\d') %>%
-        str_replace('.+listened.+7\\sdays\\s-\\s','')
-names_radio_14_7 <- names_radio_14_7[-c(81, 87,88)] # get rid of "unsure" and "none" & empty one 
-
-names_radio_14_y <- electr_14_labels %>%
-        str_subset('ca66co\\d{2}_\\d') %>%
-        str_replace('.+listened\\sto\\syesterday\\s-\\s','')
-names_radio_14_y <- names_radio_14_y[-c(64,65)] # get rid of "unsure" and "none"
-
-
-# # most radio stations in 4 weeks, so use that to create names list
-# names_radio_14 <- names_radio_14_4w
+names_radio_14 <- names_radio_14_4w
+# 
+# check_radio_12 <- readRDS("names_radio_12_copy.rds")
+# 
 # fix(names_radio_14)
+
 saveRDS(names_radio_14, "names_radio_14.rds")
 names_radio_14 <- readRDS('names_radio_14.rds')
 
+
+# 
+# names_radio_14_7 <- electr_14_labels %>%
+#         str_subset('ca65co\\d{2}_\\d') %>%
+#         str_replace('.+listened.+7\\sdays\\s-\\s','')
+# names_radio_14_7 <- names_radio_14_7[-c(81, 87,88)] # get rid of "unsure" and "none" & empty one 
+# 
+# names_radio_14_y <- electr_14_labels %>%
+#         str_subset('ca66co\\d{2}_\\d') %>%
+#         str_replace('.+listened\\sto\\syesterday\\s-\\s','')
+# names_radio_14_y <- names_radio_14_y[-c(64,65)] # get rid of "unsure" and "none"
+
+
+
+
 # get data...
 radio4weeks_14 <- electr_14[,str_detect(names(electr_14), 'ca64co\\d{2}_\\d')]
-radio4weeks_14 <- radio4weeks_14[,-c(98,99)] # get rid of "unsure" and "none"
+radio4weeks_14 <- radio4weeks_14[,1:100] # get rid of "unsure" and "none" etc..
 
 radio7days_14 <- electr_14[,str_detect(names(electr_14), 'ca65co\\d{2}_\\d')]
 radio7days_14 <- radio7days_14[,-c(81, 87,88)]  # get rid of "unsure" and "none" & empty one 
