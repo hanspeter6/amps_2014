@@ -210,63 +210,81 @@ radio_engagement_14 <- readRDS("radio_engagement_14.rds")
 
 
 ## TV (this year, included specific dstv and toptv channels (will include them))
-names_tv_14 <- electr_14_labels %>%
-        str_subset('Watched.+4\\sWEEKS') %>%
-        str_replace('.+Watched\\s','') %>%
-        str_replace('in\\sthe\\sPAST\\s4\\sWEEKS','') %>%
-        str_trim()
+
+check_tv_names_12 <- readRDS("names_tv_12_copy.rds")
+
+names_tv_14 <- c("e TV",
+                 "MNet Main",
+                 "SABC 1",
+                 "SABC 2",
+                 "SABC 3",
+                 "IKZN TV",
+                 "Bay TV",
+                 "Cape Town TV",
+                 "Soweto TV",
+                 "Tswane TV",
+                 "Top TV",
+                 "DSTV")
 
 saveRDS(names_tv_14, "names_tv_14.rds")
 names_tv_14 <- readRDS("names_tv_14.rds")
 
-# want to isolate only past 4 weeks and get rid of ("UNSURE", and "no TV")
-tv4weeks_14 <- electr_14[,c('ca45co30_1',
-                            'ca45co30_2',
-                            'ca45co30_3',
-                            'ca45co30_4',
-                            'ca45co30_5',
-                            'ca45co30_6',
-                            'ca45co30_7',
-                            'ca45co30_8',
-                            'ca45co30_9',
-                            'ca45co31_0',
-                            'ca45co72_3',
-                            'ca45co72_8'
-                            )] 
+# want to isolate only past 4 weeks and get rid of ("UNSURE", and "no TV") 
+# also NB for 2014 topTV changed name to Starsat. Will stick to topTV here.
+tv4weeks_14 <- electr_14[,c('ca45co49_1',
+                            'ca45co49_2',
+                            'ca45co49_4',
+                            'ca45co49_5',
+                            'ca45co49_6',
+                            'ca45co49_7',
+                            'ca45co49_8',
+                            'ca45co49_9',
+                            'ca45co50_1',
+                            'ca45co50_2',
+                            'ca46co72_3',
+                            'ca46co72_8')] 
 
 # want to isolate only past 7 days...
-tv7days_14 <- electr_14[,c('ca45co32_1',
-                           'ca45co32_2',
-                           'ca45co32_3',
-                           'ca45co32_4',
-                           'ca45co32_5',
-                           'ca45co32_6',
-                           'ca45co32_7',
-                           'ca45co32_8',
-                           'ca45co32_9',
-                           'ca45co33_0',
-                           'ca45co74_3',
-                           'ca45co74_8'
-                           )] 
+tv7days_14 <- electr_14[,c('ca45co51_1',
+                           'ca45co51_2',
+                           'ca45co51_4',
+                           'ca45co51_5',
+                           'ca45co51_6',
+                           'ca45co51_7',
+                           'ca45co51_8',
+                           'ca45co51_9',
+                           'ca45co52_1',
+                           'ca45co52_2',
+                           'ca46co74_3',
+                           'ca46co74_8')] 
 
 # want to isolate only yesterday...(indexes w.r.t 4weeks that are missing here: 7, 10)
-tvYesterday_14 <- electr_14[,c('ca45co34_1',
-                               'ca45co34_2',
-                               'ca45co34_3',
-                               'ca45co34_4',
-                               'ca45co34_5',
-                               'ca45co34_6',
-                               'ca45co34_8',
-                               'ca45co34_9',
-                               'ca45co76_3',
-                               'ca45co76_8'
-                               )]
+tvYesterday_14 <- electr_14[,c('ca45co53_1',
+                               'ca45co53_2',
+                               'ca45co53_4',
+                               'ca45co53_5',
+                               'ca45co53_6',
+                               'ca45co53_7',
+                               'ca45co53_8',
+                               'ca45co53_9',
+                               'ca45co54_1',
+                               'ca45co54_2',
+                               'ca46co76_3',
+                               'ca46co76_8')]
 
 # combining into a tv engagement dataset (using tv4weeks_14 as basis):
 
-tv_engagement_14 <- tv4weeks_14 + tv7days_14
-tv_engagement_14[,-c(7,10)] <- tv_engagement_14[,-c(7,10)] + tvYesterday_14
+tv_engagement_14 <- tv4weeks_14 + tv7days_14 +tvYesterday_14
 names(tv_engagement_14) <- names_tv_14
+
+#NB could consider adding tv viewing intensity... ie light medium or heavy...
+
+tv_intense_14 <- electr_14[,c('ca45co60_1',
+                          'ca45co60_2','ca45co60_3')]
+tv_intense_14$ca45co60_2 <- ifelse(tv_intense_14$ca45co60_2 == 1,2,tv_intense_14$ca45co60_2)
+tv_intense_14$ca45co60_3 <- ifelse(tv_intense_14$ca45co60_3 == 1,3,tv_intense_14$ca45co60_3)
+
+tv_intensity <- rowSums(tv_intense_14)
 
 saveRDS(tv_engagement_14, "tv_engagement_14.rds")
 
