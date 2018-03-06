@@ -290,45 +290,64 @@ saveRDS(tv_engagement_14, "tv_engagement_14.rds")
 
 tv_engagement_14 <- readRDS("tv_engagement_14.rds")
 
+
+
 ## 3rd Internet Media Set
 
-## accessed: sum of 14 months, 4weeks, 7days and yesterday
-internet_level1 <- internet_14[,str_detect(names(internet_14), 'ca49co(45)|(46)|(47)|(48)')]
-
-#change all 2 = "No" and NA's' to 0
-for(i in 1: nrow(internet_level1)) {
-        for(j in 1: ncol(internet_level1)) {
-                if(is.na(internet_level1[i,j]) | internet_level1[i,j] == 2){
-                        internet_level1[i,j] <- 0
-                }
-        }
-}
+## accessed: sum of 12 months, 4weeks, 7days and yesterday
+internet_level1 <- internet_14[,str_detect(names(internet_14), 'ca49co(63_1)|(63_2)|(63_3)|(63_4)')]
 
 internet_level1 <- rowSums(internet_level1)
 
 # what internet was accessed for...
 ##  (maybe could use similar to vehicles?? as well as add up and multiply with first eng):
 
-internet_level2 <- internet_14[,str_detect(names(internet_14), 'ca49co(55)|(58)|(63)|(64)|(69)|(71)')]
+int_search <- internet_14[,c('ca49co15_1',
+                             'ca49co15_2')] %>%
+        mutate(sum = ca49co15_1 + ca49co15_2)
+        
+int_search <- ifelse(int_search$sum == 2, 1, int_search$sum)
 
-# change NA and 3 = 0; 1,2,4 = 1
-for(i in 1: nrow(internet_level2)) {
-        for(j in 1: ncol(internet_level2)) {
-                if(is.na(internet_level2[i,j]) | internet_level2[i,j] == 3){
-                        internet_level2[i,j] <- 0
-                }
-                else {
-                        internet_level2[i,j] <- 1
-                }
-        }
-}
+int_social <- internet_14[,c('ca49co18_1',
+                             'ca49co18_2',
+                             'ca49co19_1',
+                             'ca49co19_2',
+                             'ca49co20_1',
+                             'ca49co20_2')]
+int_social <- rowSums(int_social)
+int_social <- as.vector(ifelse(int_social != 0, 1, int_social))
 
-names(internet_level2) <- c('int_search',
-                          'int_social',
-                          'int_print',
-                          'int_news',
-                          'int_tv',
-                          'int_radio')
+int_print <- internet_14[,c('ca49co30_1',
+                             'ca49co30_2')] %>%
+        mutate(sum = ca49co30_1 + ca49co30_2)
+
+int_print <- ifelse(int_print$sum == 2, 1, int_print$sum)
+
+int_news <- internet_14[,c('ca49co31_1',
+                            'ca49co31_2')] %>%
+        mutate(sum = ca49co31_1 + ca49co31_2)
+
+int_news <- ifelse(int_news$sum == 2, 1, int_news$sum)
+
+int_tv <- internet_14[,c('ca49co36_1',
+                           'ca49co36_2')] %>%
+        mutate(sum = ca49co36_1 + ca49co36_2)
+
+int_tv <- ifelse(int_tv$sum == 2, 1, int_tv$sum)
+
+int_radio <- internet_14[,c('ca49co38_1',
+                         'ca49co38_2')] %>%
+        mutate(sum = ca49co38_1 + ca49co38_2)
+
+int_radio <- ifelse(int_radio$sum == 2, 1, int_radio$sum)
+
+
+internet_level2 <- data.frame(int_search,
+                              int_social,
+                              int_print,
+                              int_news,
+                              int_tv,
+                              int_radio)
 
 ## create single dataframe for internet multiplying internet_level1 with sum of internet_level2:
 internet_engagement_14 <- internet_level2  * internet_level1
@@ -340,7 +359,7 @@ internet_engagement_14 <- readRDS("internet_engagement_14.rds")
 ## create single dataframe for media14, including total_engagement columns (consider using media groupings .. follow up on this!)
 
 # Level 1: Type
-media_type_14 <- data.frame(cbind(qn = print_14$qn,
+media_type_14 <- data.frame(cbind(qn = demogrs_14$qn,
                                   scale(rowSums(newspapers_engagement_14)),
                                   scale(rowSums(magazines_engagement_14)),
                                   scale(rowSums(radio_engagement_14)),
@@ -353,7 +372,7 @@ names(media_type_14) <- c("qn",
                           "tv",
                           "internet")
 # Level 2: Vehicles
-media_vehicles_14 <- data.frame(cbind(qn = print_14$qn,
+media_vehicles_14 <- data.frame(cbind(qn = demogrs_14$qn,
                                       newspapers_engagement_14,
                                       magazines_engagement_14,
                                       radio_engagement_14,
