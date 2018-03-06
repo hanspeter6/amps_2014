@@ -406,45 +406,71 @@ metro <- rowSums(cbind(metro1,
 # seems that all the 19s are the sum of 7 & 14s (ie, Soweto)
 # # code as such, ie all 19s are actually 14s (this also eliminates double count in the 7s ( so exlude Soweto)) >NB double check this is same in '95!!!
 metro <- ifelse(metro == 19, 14, metro)
-lang <- demogrs_14[,'ca91co75'] + 1 # change 0 to 1, so add one to all
+lang <- as.numeric(demogrs_14[,'ca91co75']) # chere no need to change 0 to 1...??
 lifestages <- demogrs_14[,'ca91co77']
 mar_status <- personal_14[,'ca56co09']
-pers_inc1 <- personal_14[,'ca57co61']
-pers_inc2 <- personal_14[,'ca57co62'] + 10
-pers_inc3 <- personal_14[,'ca57co63'] + 20
-pers_inc4 <- personal_14[,'ca57co64'] + 30
-for(i in 1: length(pers_inc4)) {
-        if(!is.na(pers_inc4[i])) {
-                if(pers_inc4[i] == 31) {
-                        pers_inc4[i] <- 0
-                }
-                if(pers_inc4[i] == 32) {
-                        pers_inc4[i] <- 60
-                }
-        }
-}
-pers_inc <- rowSums(cbind(pers_inc1,
-                          pers_inc2,
-                          pers_inc3,
-                          pers_inc4), na.rm = TRUE)
+# pers_inc1 <- personal_14[,'ca57co61']
+# pers_inc2 <- personal_14[,'ca57co62'] + 10
+# pers_inc3 <- personal_14[,'ca57co63'] + 20
+# pers_inc4 <- personal_14[,'ca57co64'] + 30
+# for(i in 1: length(pers_inc4)) {
+#         if(!is.na(pers_inc4[i])) {
+#                 if(pers_inc4[i] == 31) {
+#                         pers_inc4[i] <- 0
+#                 }
+#                 if(pers_inc4[i] == 32) {
+#                         pers_inc4[i] <- 60
+#                 }
+#         }
+# }
+# pers_inc <- rowSums(cbind(pers_inc1,
+#                           pers_inc2,
+#                           pers_inc3,
+#                           pers_inc4), na.rm = TRUE)
 lsm <- lsm_14[,'ca91co64']
 lsm <- ifelse(lsm == 0,10,lsm)
 
-lifestyle <- lsm_14[,'ca58co39'] + 1 # to get rid of zero
 
-attitudesA <- lsm_14[,'ca67co10'] + 1 # to get rid of zeros
-attitudesB <- lsm_14[,'ca67co10_lsm']
+# lifestyle groups total groups lsm groups 1:10
+#Value	Category (changed by 1)
+#0	None
+#1	Cell Sophisticates
+#2	Outdoors
+#3	Avid Readers
+#4	Sports
+#5	Traditionals
+#6	Gamers
+#7	Studious
+#8	Showgoers
+lifestyle <- lsm_14[,'ca58co19'] + 1 # to get rid of zero
+
+# attitudes::
+# want:
+#1: None 
+#2: Now Generation
+#3: Nation Builders
+#4: Distants_Survivors
+#5: Distants_Established
+#6: Rooted
+#7: Global Citizens
+attitudesA <- lsm_14[,'ca72co10'] + 1 # to get rid of zeros
+attitudesB <- lsm_14[,'ca72co10_lsm']
+
 attitudesA <- ifelse(is.na(attitudesA), 0, attitudesA)
 attitudesB <- ifelse(is.na(attitudesB), 0, attitudesB)
+
+attitudesB <- ifelse(attitudesB == 8, 4, attitudesB)
+attitudesB <- ifelse(attitudesB == 9, 5, attitudesB)
+
+attitudesA <- ifelse(attitudesA == 4, 0, attitudesA)
+attitudesA <- ifelse(attitudesA == 5 | attitudesA == 6, attitudesA + 1, attitudesA)
+
 attitudes <- attitudesA + attitudesB
-attitudes <- ifelse(attitudes == 8, 4, attitudes)
-attitudes <- ifelse(attitudes == 5 | attitudes == 6, attitudes + 1, attitudes)
-attitudes <- ifelse(attitudes == 9, 5, attitudes)
 table(attitudes) # check
 
 
-demographics_14 <- data.frame(qn = print_14$qn,
-                              pwgt = print_14$pwgt,
+demographics_14 <- data.frame(qn = demogrs_14$qn,
+                              pwgt = demogrs_14$pwgt,
                               age,
                               sex,
                               edu,
@@ -455,7 +481,7 @@ demographics_14 <- data.frame(qn = print_14$qn,
                               lang,
                               lifestages,
                               mar_status,
-                              pers_inc,
+                              # pers_inc,
                               lsm,
                               lifestyle,
                               attitudes)
