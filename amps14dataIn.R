@@ -142,39 +142,41 @@ names_radio_14_4w <- electr_14_labels %>%
 # get rid of tail lines
 names_radio_14_4w <- names_radio_14_4w[1:100] # get rid of summaries & "unsure" &"none"
 
-names_radio_14 <- names_radio_14_4w
+# names_radio_14 <- names_radio_14_4w
 # 
 # check_radio_12 <- readRDS("names_radio_12_copy.rds")
 # 
 # fix(names_radio_14)
 
-saveRDS(names_radio_14, "names_radio_14.rds")
+# saveRDS(names_radio_14, "names_radio_14.rds")
 names_radio_14 <- readRDS('names_radio_14.rds')
 
 
 # 
 # names_radio_14_7 <- electr_14_labels %>%
 #         str_subset('ca65co\\d{2}_\\d') %>%
-#         str_replace('.+listened.+7\\sdays\\s-\\s','')
-# names_radio_14_7 <- names_radio_14_7[-c(81, 87,88)] # get rid of "unsure" and "none" & empty one 
+#         str_replace('.+s\\s-\\s','') %>%
+#         str_trim()
 # 
+# names_radio_14_7 <- names_radio_14_7[1:91] # get rid of "unsure" and "none" etc
+# # # 
 # names_radio_14_y <- electr_14_labels %>%
 #         str_subset('ca66co\\d{2}_\\d') %>%
 #         str_replace('.+listened\\sto\\syesterday\\s-\\s','')
 # names_radio_14_y <- names_radio_14_y[-c(64,65)] # get rid of "unsure" and "none"
-
-
-
+# 
+# 
+# 
 
 # get data...
 radio4weeks_14 <- electr_14[,str_detect(names(electr_14), 'ca64co\\d{2}_\\d')]
 radio4weeks_14 <- radio4weeks_14[,1:100] # get rid of "unsure" and "none" etc..
 
 radio7days_14 <- electr_14[,str_detect(names(electr_14), 'ca65co\\d{2}_\\d')]
-radio7days_14 <- radio7days_14[,-c(81, 87,88)]  # get rid of "unsure" and "none" & empty one 
+radio7days_14 <- radio7days_14[,1:91]  # get rid of "unsure" and "none" etc...
 
 radioYesterday_14 <- electr_14[,str_detect(names(electr_14), 'ca66co\\d{2}_\\d')]
-radioYesterday_14 <- radioYesterday_14[,-c(64,65)]  # get rid of "unsure" and "none"
+radioYesterday_14 <- radioYesterday_14[,1:68]  # get rid of "unsure" and "none" etc..
 
 # identifying missing stations by changing all to "64"
 a <- names(radio4weeks_14)
@@ -201,6 +203,11 @@ names(radio_engagement_14) <- names_radio_14
 
 saveRDS(radio_engagement_14, "radio_engagement_14.rds")
 radio_engagement_14 <- readRDS("radio_engagement_14.rds")
+
+
+
+
+
 
 ## TV (this year, included specific dstv and toptv channels (will include them))
 names_tv_14 <- electr_14_labels %>%
