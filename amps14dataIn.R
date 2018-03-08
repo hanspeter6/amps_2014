@@ -382,6 +382,9 @@ media_vehicles_14 <- data.frame(cbind(qn = demogrs_14$qn,
 saveRDS(media_type_14, 'media_type_14.rds')
 saveRDS(media_vehicles_14, 'media_vehicles_14.rds')
 
+media_type_14.rds <- readRDS('media_type_14.rds')
+media_vehicles_14 <- readRDS('media_vehicles_14.rds')
+
 ## 4th Demographics Set (see notes for descriptions)
 
 age <- personal_14[,'ca56co34']
@@ -402,11 +405,29 @@ metro1 <- demogrs_14[,'ca91co57']
 metro2 <- demogrs_14[,'ca91co58'] + 9
 metro <- rowSums(cbind(metro1,
                        metro2), na.rm = TRUE)
-#as in '95 need to sort out double count of Soweto....
-# seems that all the 19s are the sum of 7 & 14s (ie, Soweto)
-# # code as such, ie all 19s are actually 14s (this also eliminates double count in the 7s ( so exlude Soweto)) >NB double check this is same in '95!!!
-metro <- ifelse(metro == 19, 14, metro)
-lang <- as.numeric(demogrs_14[,'ca91co75']) # chere no need to change 0 to 1...??
+
+# collect and code into single metro set:
+#0 = no metro
+#1 Cape Town
+#2 Cape Town Fringe Area
+#3 Port Elizabeth/Uitenhage
+#4 East London
+#5 Durban
+#6 Bloemfontein
+#7 Greater Johannesburg
+#8 Reef
+#9 Pretoria
+#10 Kimberley
+##11 Pietermaritzburg
+##12 Vaal
+##13 Welkom/Witbank??
+
+metro <- ifelse(metro == 19, 7, metro) # add soweto back to greater jhb
+metro <- ifelse(metro == 13, 12, metro) # vaal
+metro <- ifelse(metro == 15, 13, metro) # welkom/witbank
+table(metro)
+
+lang <- as.numeric(demogrs_14[,'ca91co75']) # here no need to change 0 to 1...??
 lifestages <- demogrs_14[,'ca91co77']
 mar_status <- personal_14[,'ca56co09']
 # pers_inc1 <- personal_14[,'ca57co61']
