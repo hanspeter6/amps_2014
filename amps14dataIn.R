@@ -114,22 +114,37 @@ saveRDS(thorough_14, "thorough_14.rds")
 # create single print dataset:
 
 print_engagement_14 <- issues_14 * thorough_14
+print_engagement_14_simple <- issues_14
 
 # replace nas with zero's:
 print_engagement_14[is.na(print_engagement_14)] <- 0
+print_engagement_14_simple[is.na(print_engagement_14_simple)] <- 0
+
+names(print_engagement_14) <- names_print_14
+names(print_engagement_14_simple) <- names_print_14
 
 saveRDS(print_engagement_14, "print_engagement_14.rds")
+saveRDS(print_engagement_14_simple, "print_engagement_14_simple.rds")
+
 
 print_engagement_14 <- readRDS("print_engagement_14.rds")
+print_engagement_14_simple <- readRDS("print_engagement_14_simple.rds")
 
 newspapers_engagement_14 <- print_engagement_14[,c(1:50)]
 magazines_engagement_14 <- print_engagement_14[,c(51:160)]
+newspapers_engagement_14_simple <- print_engagement_14_simple[,c(1:50)]
+magazines_engagement_14_simple <- print_engagement_14_simple[,c(51:160)]
 
 saveRDS(newspapers_engagement_14, "newspapers_engagement_14.rds")
 saveRDS(magazines_engagement_14, "magazines_engagement_14.rds")
+saveRDS(newspapers_engagement_14_simple, "newspapers_engagement_14_simple.rds")
+saveRDS(magazines_engagement_14_simple, "magazines_engagement_14_simple.rds")
 
 magazines_engagement_14 <- readRDS("magazines_engagement_14.rds")
 newspapers_engagement_14 <- readRDS("newspapers_engagement_14.rds")
+magazines_engagement_14_simple <- readRDS("magazines_engagement_14_simple.rds")
+newspapers_engagement_14_simple <- readRDS("newspapers_engagement_14_simple.rds")
+
 
 ## 2nd Electronic Media Set
 # RADIO
@@ -148,9 +163,8 @@ names_radio_14_4w <- names_radio_14_4w[1:100] # get rid of summaries & "unsure" 
 # 
 # fix(names_radio_14)
 
-# saveRDS(names_radio_14, "names_radio_14.rds")
+saveRDS(names_radio_14, "names_radio_14.rds")
 names_radio_14 <- readRDS('names_radio_14.rds')
-
 
 # 
 # names_radio_14_7 <- electr_14_labels %>%
@@ -170,13 +184,13 @@ names_radio_14 <- readRDS('names_radio_14.rds')
 
 # get data...
 radio4weeks_14 <- electr_14[,str_detect(names(electr_14), 'ca64co\\d{2}_\\d')]
-radio4weeks_14 <- radio4weeks_14[,1:100] # get rid of "unsure" and "none" etc..
+radio4weeks_14 <- radio4weeks_14[,c(1:100,104)] # get rid of "unsure" and "none" etc..
 
 radio7days_14 <- electr_14[,str_detect(names(electr_14), 'ca65co\\d{2}_\\d')]
-radio7days_14 <- radio7days_14[,1:91]  # get rid of "unsure" and "none" etc...
+radio7days_14 <- radio7days_14[,c(1:91, 95)]  # get rid of "unsure" and "none" etc...
 
 radioYesterday_14 <- electr_14[,str_detect(names(electr_14), 'ca66co\\d{2}_\\d')]
-radioYesterday_14 <- radioYesterday_14[,1:68]  # get rid of "unsure" and "none" etc..
+radioYesterday_14 <- radioYesterday_14[,c(1:68, 72)]  # get rid of "unsure" and "none" etc..
 
 # identifying missing stations by changing all to "64"
 a <- names(radio4weeks_14)
@@ -207,6 +221,10 @@ radio_engagement_14 <- readRDS("radio_engagement_14.rds")
 
 
 
+# tv need to include "other"...
+# then deal with simple internet
+# then onto explore14
+
 
 
 ## TV (this year, included specific dstv and toptv channels (will include them))
@@ -224,7 +242,8 @@ names_tv_14 <- c("e TV",
                  "Soweto TV",
                  "Tswane TV",
                  "Top TV",
-                 "DSTV")
+                 "DSTV",
+                 "Other TV")
 
 saveRDS(names_tv_14, "names_tv_14.rds")
 names_tv_14 <- readRDS("names_tv_14.rds")
@@ -242,7 +261,8 @@ tv4weeks_14 <- electr_14[,c('ca45co49_1',
                             'ca45co50_1',
                             'ca45co50_2',
                             'ca46co72_3',
-                            'ca46co72_8')] 
+                            'ca46co72_8',
+                            'ca45co50_5')] 
 
 # want to isolate only past 7 days...
 tv7days_14 <- electr_14[,c('ca45co51_1',
@@ -256,7 +276,8 @@ tv7days_14 <- electr_14[,c('ca45co51_1',
                            'ca45co52_1',
                            'ca45co52_2',
                            'ca46co74_3',
-                           'ca46co74_8')] 
+                           'ca46co74_8',
+                           'ca45co52_5')] 
 
 # want to isolate only yesterday...(indexes w.r.t 4weeks that are missing here: 7, 10)
 tvYesterday_14 <- electr_14[,c('ca45co53_1',
@@ -270,7 +291,8 @@ tvYesterday_14 <- electr_14[,c('ca45co53_1',
                                'ca45co54_1',
                                'ca45co54_2',
                                'ca46co76_3',
-                               'ca46co76_8')]
+                               'ca46co76_8',
+                               'ca45co53_5')]
 
 # combining into a tv engagement dataset (using tv4weeks_14 as basis):
 
@@ -289,8 +311,6 @@ tv_intensity <- rowSums(tv_intense_14)
 saveRDS(tv_engagement_14, "tv_engagement_14.rds")
 
 tv_engagement_14 <- readRDS("tv_engagement_14.rds")
-
-
 
 ## 3rd Internet Media Set
 
@@ -351,10 +371,13 @@ internet_level2 <- data.frame(int_search,
 
 ## create single dataframe for internet multiplying internet_level1 with sum of internet_level2:
 internet_engagement_14 <- internet_level2  * internet_level1
+internet_engagement_14_simple <- internet_level1
 
 saveRDS(internet_engagement_14, "internet_engagement_14.rds")
+saveRDS(internet_engagement_14_simple, "internet_engagement_14_simple.rds")
 
 internet_engagement_14 <- readRDS("internet_engagement_14.rds")
+internet_engagement_14_simple <- readRDS("internet_engagement_14_simple.rds")
 
 ## create single dataframe for media14, including total_engagement columns (consider using media groupings .. follow up on this!)
 
@@ -371,6 +394,19 @@ names(media_type_14) <- c("qn",
                           "radio",
                           "tv",
                           "internet")
+
+media_type_14_simple <- data.frame(cbind(qn = demogrs_14$qn,
+                                  scale(rowSums(newspapers_engagement_14_simple)),
+                                  scale(rowSums(magazines_engagement_14_simple)),
+                                  scale(rowSums(radio_engagement_14)),
+                                  scale(rowSums(tv_engagement_14)),
+                                  scale(internet_engagement_14_simple)))
+names(media_type_14_simple) <- c("qn",
+                          "newspapers",
+                          "magazines",
+                          "radio",
+                          "tv",
+                          "internet")
 # Level 2: Vehicles
 media_vehicles_14 <- data.frame(cbind(qn = demogrs_14$qn,
                                       newspapers_engagement_14,
@@ -378,6 +414,12 @@ media_vehicles_14 <- data.frame(cbind(qn = demogrs_14$qn,
                                       radio_engagement_14,
                                       tv_engagement_14,
                                       internet_engagement_14))
+media_vehicles_14_simple <- data.frame(cbind(qn = demogrs_14$qn,
+                                      newspapers_engagement_14_simple,
+                                      magazines_engagement_14_simple,
+                                      radio_engagement_14,
+                                      tv_engagement_14,
+                                      internet_engagement_14_simple))
 
 saveRDS(media_type_14, 'media_type_14.rds')
 saveRDS(media_vehicles_14, 'media_vehicles_14.rds')
