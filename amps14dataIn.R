@@ -423,9 +423,14 @@ media_vehicles_14_simple <- data.frame(cbind(qn = demogrs_14$qn,
 
 saveRDS(media_type_14, 'media_type_14.rds')
 saveRDS(media_vehicles_14, 'media_vehicles_14.rds')
+saveRDS(media_type_14_simple, 'media_type_14_simple.rds')
+saveRDS(media_vehicles_14_simple, 'media_vehicles_14_simple.rds')
 
-media_type_14.rds <- readRDS('media_type_14.rds')
+media_type_14 <- readRDS('media_type_14.rds')
 media_vehicles_14 <- readRDS('media_vehicles_14.rds')
+media_type_14_simple <- readRDS('media_type_14_simple.rds')
+media_vehicles_14_simple <- readRDS('media_vehicles_14_simple.rds')
+
 
 ## 4th Demographics Set (see notes for descriptions)
 
