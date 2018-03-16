@@ -560,7 +560,81 @@ demographics_14 <- data.frame(qn = demogrs_14$qn,
                               attitudes)
 
 
-# save as
+#reducing levels of categorical variables and setting factor types for demographics:
+# age:
+demographics_14$age <- ifelse(demographics_14$age %in% c(1,2), 1, demographics_14$age)
+demographics_14$age <- ifelse(demographics_14$age %in% c(3,4), 2, demographics_14$age)
+demographics_14$age <- ifelse(demographics_14$age %in% c(5,6), 3, demographics_14$age)
+demographics_14$age <- ifelse(demographics_14$age %in% c(7,8), 4, demographics_14$age)
+demographics_14$age <- factor(demographics_14$age, ordered = TRUE)
+
+# sex:
+demographics_14$sex <- factor(demographics_14$sex, ordered = FALSE)
+
+#edu:
+demographics_14$edu <- ifelse(demographics_14$edu %in% c(1,2,3,4), 1, demographics_14$edu)
+demographics_14$edu <- ifelse(demographics_14$edu %in% c(5), 2, demographics_14$edu)
+demographics_14$edu <- ifelse(demographics_14$edu %in% c(6,7,8), 3, demographics_14$edu)
+demographics_14$edu <- factor(demographics_14$edu, ordered = TRUE)
+
+#hh_inc
+demographics_14$hh_inc <- ifelse(demographics_14$hh_inc %in% c(1,2,3,4), 1, demographics_14$hh_inc)
+demographics_14$hh_inc <- ifelse(demographics_14$hh_inc %in% c(5,6), 2, demographics_14$hh_inc)
+demographics_14$hh_inc <- ifelse(demographics_14$hh_inc %in% c(7), 3, demographics_14$hh_inc)
+demographics_14$hh_inc <- ifelse(demographics_14$hh_inc %in% c(8), 4, demographics_14$hh_inc)
+demographics_14$hh_inc <- factor(demographics_14$hh_inc, ordered = TRUE)
+
+demographics_14$race <- factor(demographics_14$race, ordered = FALSE)
+demographics_14$province <- factor(demographics_14$province, ordered = FALSE)
+demographics_14$metro <- factor(demographics_14$metro, ordered = FALSE)
+demographics_14$lang <- factor(demographics_14$lang, ordered = FALSE)
+demographics_14$lifestages <- factor(demographics_14$lifestages, ordered = FALSE)
+demographics_14$mar_status <- factor(demographics_14$mar_status, ordered = FALSE)
+
+# lsm
+demographics_14$lsm <- ifelse(demographics_14$lsm %in% c(1,2), 1, demographics_14$lsm)
+demographics_14$lsm <- ifelse(demographics_14$lsm %in% c(3,4), 2, demographics_14$lsm)
+demographics_14$lsm <- ifelse(demographics_14$lsm %in% c(5,6), 3, demographics_14$lsm)
+demographics_14$lsm <- ifelse(demographics_14$lsm %in% c(7,8), 4, demographics_14$lsm)
+demographics_14$lsm <- ifelse(demographics_14$lsm %in% c(9,10), 5, demographics_14$lsm)
+demographics_14$lsm <- factor(demographics_14$lsm, ordered = TRUE)
+
+demographics_14$lifestyle <- factor(demographics_14$lifestyle, ordered = FALSE)
+demographics_14$attitudes <- factor(demographics_14$attitudes, ordered = FALSE)
 
 saveRDS(demographics_14, "demographics_14.rds")
+
+# read datafiles again if necessary
+magazines_engagement_14 <- readRDS("magazines_engagement_14.rds")
+magazines_engagement_14_simple <- readRDS("magazines_engagement_14_simple.rds")
+newspapers_engagement_14 <- readRDS("newspapers_engagement_14.rds")
+newspapers_engagement_14_simple <- readRDS("newspapers_engagement_14_simple.rds")
+radio_engagement_14 <- readRDS("radio_engagement_14.rds")
+tv_engagement_14 <- readRDS("tv_engagement_14.rds")
+internet_engagement_14 <- readRDS("internet_engagement_14.rds")
+internet_engagement_14_simple <- readRDS("internet_engagement_14_simple.rds")
+
+media_type_14 <- readRDS("media_type_14.rds")
+media_vehicles_14 <- readRDS("media_vehicles_14.rds")
+media_type_14_simple <- readRDS("media_type_14_simple.rds")
+media_vehicles_14_simple <- readRDS("media_vehicles_14_simple.rds")
+
 demographics_14 <- readRDS("demographics_14.rds")
+
+
+
+# #create single dataset minus non metropolitans
+set14 <- demographics_14 %>%
+        left_join(media_type_14) %>%
+        left_join(media_vehicles_14) %>%
+        filter(metro != 0)
+set14_simple <- demographics_14 %>%
+        left_join(media_type_14_simple) %>%
+        left_join(media_vehicles_14_simple) %>%
+        filter(metro != 0)
+
+
+
+# save them:
+saveRDS(set14, "set14.rds")
+saveRDS(set14_simple, "set14_simple.rds")

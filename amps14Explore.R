@@ -78,6 +78,8 @@ demographics_14$lsm <- factor(demographics_14$lsm, ordered = TRUE)
 demographics_14$lifestyle <- factor(demographics_14$lifestyle, ordered = FALSE)
 demographics_14$attitudes <- factor(demographics_14$attitudes, ordered = FALSE)
 
+
+
 # #create single dataset minus non metropolitans
 set14 <- demographics_14 %>%
         left_join(media_type_14) %>%
