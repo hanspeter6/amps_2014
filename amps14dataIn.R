@@ -394,6 +394,9 @@ names(media_type_14) <- c("qn",
                           "radio",
                           "tv",
                           "internet")
+media_type_14 <- media_type_14 %>%
+        mutate(all = as.vector(scale(newspapers + magazines + radio + tv + internet))) 
+
 
 media_type_14_simple <- data.frame(cbind(qn = demogrs_14$qn,
                                   scale(rowSums(newspapers_engagement_14_simple)),
@@ -407,6 +410,9 @@ names(media_type_14_simple) <- c("qn",
                           "radio",
                           "tv",
                           "internet")
+media_type_14_simple <- media_type_14_simple %>%
+        mutate(all = as.vector(scale(newspapers + magazines + radio + tv + internet))) 
+
 # Level 2: Vehicles
 media_vehicles_14 <- data.frame(cbind(qn = demogrs_14$qn,
                                       newspapers_engagement_14,
@@ -549,7 +555,6 @@ demographics_14 <- data.frame(qn = demogrs_14$qn,
                               lang,
                               lifestages,
                               mar_status,
-                              # pers_inc,
                               lsm,
                               lifestyle,
                               attitudes)
