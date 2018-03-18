@@ -15,6 +15,7 @@ library(nFactors)
 library(FactoMineR)
 library(factoextra)
 library(gridExtra)
+library(ggplot2)
 
 #  read in datasets
 set14 <- readRDS("set14.rds")
@@ -65,23 +66,112 @@ kmeans14_simple <- kmeans(set14_simple[,c("newspapers","magazines","radio", "tv"
                           nstart = 20)
 
 # iteration to align colours/numers with 2012 sets
-table(kmeans14$cluster) # come back to this.. actually looks quite similar. so stick with number as they are
+table(kmeans14$cluster) # come back to this.
 
+# Comparing 2008 with 2010... will change colours if necessary to reflect meaning based on 2012:
 
-
+# red becomes lilac:  1 becomes 4
+# green becomes red: 2 becomes 1
+# blue stays blue: 3 becomes 2
+# lilac becomes green: 4 becomes 3
+kmeans14$cluster <- ifelse(kmeans14$cluster == 1, 9, kmeans14$cluster)
+kmeans14$cluster <- ifelse(kmeans14$cluster == 2, 6, kmeans14$cluster)
+kmeans14$cluster <- ifelse(kmeans14$cluster == 3, 8, kmeans14$cluster)
+kmeans14$cluster <- ifelse(kmeans14$cluster == 4, 7, kmeans14$cluster)
+kmeans14$cluster <- kmeans14$cluster - 5
 
 # add cluster labels to the dataset
-set14 <- set14 %>%
+set14c <- set14 %>%
         mutate(cluster = factor(kmeans14$cluster))
-set14_simple <- set14_simple %>%
+set14c_simple <- set14_simple %>%
         mutate(cluster = factor(kmeans14_simple$cluster))
 
 
-saveRDS(set14, "set14.rds")
-saveRDS(set14_simple, "set14_simple.rds")
+saveRDS(set14c, "set14c.rds")
+saveRDS(set14c_simple, "set14c_simple.rds")
 
-set14 <- readRDS("set14.rds")
-set14_simple <- readRDS("set14_simple.rds")
+set14c <- readRDS("set14c.rds")
+set14c_simple <- readRDS("set14c_simple.rds")
+
+
+# some plots
+# boxplots of clusters and media types
+p1 <- ggplot(set14c, aes(cluster, all, fill = cluster)) +
+        geom_boxplot() +
+        guides(fill = FALSE) +
+        labs(title = "all")
+p2 <- ggplot(set14c, aes(cluster, newspapers, fill = cluster)) +
+        geom_boxplot() +
+        guides(fill = FALSE) +
+        labs(title = "newspapers")
+p3 <- ggplot(set14c, aes(cluster, magazines, fill = cluster)) +
+        geom_boxplot() +
+        guides(fill = FALSE) +
+        labs(title = "magazines")
+p4 <- ggplot(set14c, aes(cluster, radio, fill = cluster)) +
+        geom_boxplot() +
+        guides(fill = FALSE) +
+        labs(title = "radio")
+p5 <- ggplot(set14c, aes(cluster, tv, fill = cluster)) +
+        geom_boxplot() +
+        guides(fill = FALSE) +
+        labs(title = "tv")
+p6 <- ggplot(set14c, aes(cluster, internet, fill = cluster)) +
+        geom_boxplot() +
+        guides(fill = FALSE) +
+        labs(title = "internet")
+
+jpeg('typeBoxPlots_14.jpeg', quality = 100, type = "cairo")
+grid.arrange(p1, p2, p3, p4, p5,p6,  ncol=3, nrow = 2)
+dev.off()
+
+# try to make sense of demographics
+d1 <- ggplot(set14c, aes(race, cluster, fill = cluster)) +
+        geom_col() +
+        labs(title = "race", y = "", x = "") +
+        scale_x_discrete(labels=c("black", "coloured", "indian", "white"))
+d2 <- ggplot(set14c, aes(edu, cluster, fill = cluster)) +
+        geom_col() +
+        labs(title = "education", y = "", x = "") +
+        scale_x_discrete(labels=c("<matric", "matric",">matric"))
+d3 <- ggplot(set14c, aes(age, cluster, fill = cluster)) +
+        geom_col() +
+        labs(title = "age", y = "", x = "") +
+        scale_x_discrete(labels=c("15-24","25-44", "45-54","55+"))
+d4 <- ggplot(set14c, aes(lsm, cluster, fill = cluster)) +
+        geom_col() +
+        labs(title = "lsm", y = "", x = "") +
+        scale_x_discrete(labels=c("1-2", "3-4", "5-6", "7-8", "9-10"))
+
+jpeg('typeDemogPlots1_14.jpeg', quality = 100, type = "cairo")
+grid.arrange(d1, d2, d3, d4, ncol=2, nrow = 2)
+dev.off()
+
+d5 <- ggplot(set14c, aes(sex, cluster, fill = cluster)) +
+        geom_col() +
+        labs(title = "gender", y = "", x = "") +
+        scale_x_discrete(labels=c("male", "female"))
+d6 <- ggplot(set14c, aes(hh_inc, cluster, fill = cluster)) +
+        geom_col() +
+        labs(title = "household income", y = "", x = "") +
+        scale_x_discrete(labels=c("<5000","5000-10999","11000-19999",">=20000"))
+d7 <- ggplot(set14c, aes(lifestages, cluster, fill = cluster)) +
+        geom_col() +
+        labs(title = "lifestages", y = "", x = "")# +
+# scale_x_discrete(labels=c("<5000","5000-10999","11000-19999",">=20000"))
+d8 <- ggplot(set14c, aes(lifestyle, cluster, fill = cluster)) +
+        geom_col() +
+        labs(title = "lifestyle", y = "", x = "")# +
+# scale_x_discrete(labels=c("<5000","5000-10999","11000-19999",">=20000"))
+jpeg('typeDemogPlots2_14.jpeg', quality = 100, type = "cairo")
+grid.arrange(d5, d6, d7, d8, ncol=2, nrow = 2)
+dev.off()
+
+
+
+
+
+
 
 # consider multidimensional scaling and self organising maps on the clusters :
 
@@ -226,31 +316,3 @@ rpart.plot(tree14, type = 4, extra = 1, cex = 0.5)
 
 percentile <- ecdf(set14$internet)
 percentile(1.4)
-
-# some plots
-jpeg('typeBoxPlots_14.jpeg', quality = 100, type = "cairo")
-par(mfrow = c(2,3))
-plot(set14$radio ~ set14$cluster, col = c(2,3,4,6), main = "radio", xlab = "cluster", ylab = '')
-plot(set14$tv ~ set14$cluster, col = c(2,3,4,6), main = "tv", xlab = "cluster", ylab = '')
-plot(set14$newspapers ~ set14$cluster, col = c(2,3,4,6), main = "newspapers", xlab = "cluster", ylab = '')
-plot(set14$magazines ~ set14$cluster, col = c(2,3,4,6), main = "magazines", xlab = "cluster", ylab = '')
-plot(set14$internet ~ set14$cluster, col = c(2,3,4,6), main = "internet", xlab = "cluster", ylab = '')
-plot(set14$all ~ set14$cluster, col = c(2,3,4,6), main = "all", xlab = "cluster", ylab = '')
-dev.off()
-
-# try to make sense of demographics
-jpeg('typeDemogPlots1_14.jpeg', quality = 100, type = "cairo")
-par(mfrow = c(2,2))
-plot(set14$cluster ~ factor(set14$race,labels = c("black", "coloured", "indian", "white")), col = c(2,3,4,6), main = "race", xlab = "", ylab = "")
-plot(set14$cluster ~ factor(set14$edu, labels = c("<matric", "matric",">matric" )), col = c(2,3,4,6), main = "education", xlab = "", ylab = "")
-plot(set14$cluster ~ factor(set14$age, labels = c("15-24","25-44", "45-54","55+")), col = c(2,3,4,6), main = "age", xlab = "", ylab = "")
-plot(set14$cluster ~ factor(set14$lsm, labels = c("1-2", "3-4", "5-6", "7-8", "9-10")), col = c(2,3,4,6), main = "LSM", xlab = "", ylab = "")
-dev.off()
-
-jpeg('typeDemogPlots2_14.jpeg', quality = 100, type = "cairo")
-par(mfrow = c(2,2))
-plot(set14$cluster ~ factor(set14$sex, labels = c("male", "female")), col = c(2,3,4,6), main = "sex", xlab = "", ylab = "")
-plot(set14$cluster ~ factor(set14$hh_inc, labels = c("<5000","5000-10999","11000-19999",">=20000")), col = c(2,3,4,6), main = "hh_inc", xlab = "", ylab = "")
-plot(set14$cluster ~ set14$lifestages, col = c(2,3,4,6), main = "lifestages", xlab = "", ylab = "")
-plot(set14$cluster ~ set14$lifestyle, col = c(2,3,4,6), main = "lifestyle", xlab = "", ylab = "")
-dev.off()

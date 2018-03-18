@@ -383,11 +383,11 @@ internet_engagement_14_simple <- readRDS("internet_engagement_14_simple.rds")
 
 # Level 1: Type
 media_type_14 <- data.frame(cbind(qn = demogrs_14$qn,
-                                  scale(rowSums(newspapers_engagement_14)),
-                                  scale(rowSums(magazines_engagement_14)),
-                                  scale(rowSums(radio_engagement_14)),
-                                  scale(rowSums(tv_engagement_14)),
-                                  scale(rowSums(internet_engagement_14))))
+                                  rowSums(newspapers_engagement_14),
+                                  rowSums(magazines_engagement_14),
+                                  rowSums(radio_engagement_14),
+                                  rowSums(tv_engagement_14),
+                                  rowSums(internet_engagement_14)))
 names(media_type_14) <- c("qn",
                           "newspapers",
                           "magazines",
@@ -395,15 +395,15 @@ names(media_type_14) <- c("qn",
                           "tv",
                           "internet")
 media_type_14 <- media_type_14 %>%
-        mutate(all = as.vector(scale(newspapers + magazines + radio + tv + internet))) 
+        mutate(all = as.vector(newspapers + magazines + radio + tv + internet))
 
 
 media_type_14_simple <- data.frame(cbind(qn = demogrs_14$qn,
-                                  scale(rowSums(newspapers_engagement_14_simple)),
-                                  scale(rowSums(magazines_engagement_14_simple)),
-                                  scale(rowSums(radio_engagement_14)),
-                                  scale(rowSums(tv_engagement_14)),
-                                  scale(internet_engagement_14_simple)))
+                                  rowSums(newspapers_engagement_14_simple),
+                                  rowSums(magazines_engagement_14_simple),
+                                  rowSums(radio_engagement_14),
+                                  rowSums(tv_engagement_14),
+                                  internet_engagement_14_simple))
 names(media_type_14_simple) <- c("qn",
                           "newspapers",
                           "magazines",
@@ -411,7 +411,7 @@ names(media_type_14_simple) <- c("qn",
                           "tv",
                           "internet")
 media_type_14_simple <- media_type_14_simple %>%
-        mutate(all = as.vector(scale(newspapers + magazines + radio + tv + internet))) 
+        mutate(all = as.vector(newspapers + magazines + radio + tv + internet))
 
 # Level 2: Vehicles
 media_vehicles_14 <- data.frame(cbind(qn = demogrs_14$qn,
@@ -603,6 +603,7 @@ demographics_14$lifestyle <- factor(demographics_14$lifestyle, ordered = FALSE)
 demographics_14$attitudes <- factor(demographics_14$attitudes, ordered = FALSE)
 
 saveRDS(demographics_14, "demographics_14.rds")
+demographics_14 <- readRDS("demographics_14.rds")
 
 # read datafiles again if necessary
 magazines_engagement_14 <- readRDS("magazines_engagement_14.rds")
@@ -633,7 +634,9 @@ set14_simple <- demographics_14 %>%
         left_join(media_vehicles_14_simple) %>%
         filter(metro != 0)
 
-
+# scale media type and media vehicles
+set14[,16:301] <- scale(set14[,16:301])
+set14_simple[,16:296] <- scale(set14_simple[,16:296])
 
 # save them:
 saveRDS(set14, "set14.rds")
