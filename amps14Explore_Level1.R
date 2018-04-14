@@ -20,10 +20,11 @@ library(ggplot2)
 #  read in datasets
 set14 <- readRDS("set14.rds")
 set14_simple <- readRDS("set14_simple.rds")
+set14_other <- readRDS("set14_other.rds")
 
 # consider some correlations
 png('corTypePlot2014.png')
-corrplot(cor(set14[,c("newspapers","magazines","radio", "tv", "internet")]),
+corrplot(cor(set14_other[,c("newspapers","magazines","radio", "tv", "internet")]),
          method = "pie",
          order = "hclust",
          hclust.method = "complete",
@@ -36,7 +37,7 @@ dev.off()
 # # consider some clustering
 # # construct distance matrix for newspapers, magazines, radio, tv and internet engagement:
 # 
-# dist14 <- dist(set14[,c("newspapers","magazines","radio", "tv", "internet")])
+# dist14 <- dist(set14_other[,c("newspapers","magazines","radio", "tv", "internet")])
 # clust14 <- hclust(dist14, method = "complete")
 # plot(clust14) # messy, unhelpful
 
@@ -44,7 +45,7 @@ dev.off()
 wss <- vector()
 set.seed(5)
 for(k in c(1,2,3,4,5,6)) {
-        temp <- kmeans(set14[,c("newspapers","magazines","radio", "tv", "internet")],
+        temp <- kmeans(set14_other[,c("newspapers","magazines","radio", "tv", "internet")],
                        centers = k,
                        nstart = 3,
                        iter.max = 20)
@@ -56,7 +57,7 @@ plot(c(1,2,3,4,5,6), wss, type = "b", xlab = "k-values", ylab = "total within su
 dev.off()
 
 set.seed(56)
-kmeans14 <- kmeans(set14[,c("newspapers","magazines","radio", "tv", "internet", "all")],
+kmeans14 <- kmeans(set14_other[,c("newspapers","magazines","radio", "tv", "internet", "all")],
                    centers = 4,
                    nstart = 20,
                    iter.max = 20)
@@ -81,42 +82,45 @@ kmeans14$cluster <- ifelse(kmeans14$cluster == 4, 7, kmeans14$cluster)
 kmeans14$cluster <- kmeans14$cluster - 5
 
 # add cluster labels to the dataset
-set14c <- set14 %>%
-        mutate(cluster = factor(kmeans14$cluster))
-set14c_simple <- set14_simple %>%
-        mutate(cluster = factor(kmeans14_simple$cluster))
+set14_otherc <- set14_other %>%
+        mutate(cluster = factor(kmeans14$cluster)) %>%
+        dplyr::select(qn, pwgt, cluster, everything())
+# 
+# set14_otherc_simple <- set14_other_simple %>% ### sort out bloody internet thingy
+#         mutate(cluster = factor(kmeans14_simple$cluster)) %>%
+#         dplyr::select(qn, pwgt, cluster, everything())
 
 
-saveRDS(set14c, "set14c.rds")
-saveRDS(set14c_simple, "set14c_simple.rds")
+saveRDS(set14_otherc, "set14_otherc.rds")
+# saveRDS(set14_otherc_simple, "set14_otherc_simple.rds")
 
-set14c <- readRDS("set14c.rds")
-set14c_simple <- readRDS("set14c_simple.rds")
+set14_otherc <- readRDS("set14_otherc.rds")
+set14_otherc_simple <- readRDS("set14_otherc_simple.rds")
 
 
 # some plots
 # boxplots of clusters and media types
-p1 <- ggplot(set14c, aes(cluster, all, fill = cluster)) +
+p1 <- ggplot(set14_otherc, aes(cluster, all, fill = cluster)) +
         geom_boxplot() +
         guides(fill = FALSE) +
         labs(title = "all")
-p2 <- ggplot(set14c, aes(cluster, newspapers, fill = cluster)) +
+p2 <- ggplot(set14_otherc, aes(cluster, newspapers, fill = cluster)) +
         geom_boxplot() +
         guides(fill = FALSE) +
         labs(title = "newspapers")
-p3 <- ggplot(set14c, aes(cluster, magazines, fill = cluster)) +
+p3 <- ggplot(set14_otherc, aes(cluster, magazines, fill = cluster)) +
         geom_boxplot() +
         guides(fill = FALSE) +
         labs(title = "magazines")
-p4 <- ggplot(set14c, aes(cluster, radio, fill = cluster)) +
+p4 <- ggplot(set14_otherc, aes(cluster, radio, fill = cluster)) +
         geom_boxplot() +
         guides(fill = FALSE) +
         labs(title = "radio")
-p5 <- ggplot(set14c, aes(cluster, tv, fill = cluster)) +
+p5 <- ggplot(set14_otherc, aes(cluster, tv, fill = cluster)) +
         geom_boxplot() +
         guides(fill = FALSE) +
         labs(title = "tv")
-p6 <- ggplot(set14c, aes(cluster, internet, fill = cluster)) +
+p6 <- ggplot(set14_otherc, aes(cluster, internet, fill = cluster)) +
         geom_boxplot() +
         guides(fill = FALSE) +
         labs(title = "internet")
@@ -126,19 +130,19 @@ grid.arrange(p1, p2, p3, p4, p5,p6,  ncol=3, nrow = 2)
 dev.off()
 
 # try to make sense of demographics
-d1 <- ggplot(set14c, aes(race, cluster, fill = cluster)) +
+d1 <- ggplot(set14_otherc, aes(race, cluster, fill = cluster)) +
         geom_col() +
         labs(title = "race", y = "", x = "") +
         scale_x_discrete(labels=c("black", "coloured", "indian", "white"))
-d2 <- ggplot(set14c, aes(edu, cluster, fill = cluster)) +
+d2 <- ggplot(set14_otherc, aes(edu, cluster, fill = cluster)) +
         geom_col() +
         labs(title = "education", y = "", x = "") +
         scale_x_discrete(labels=c("<matric", "matric",">matric"))
-d3 <- ggplot(set14c, aes(age, cluster, fill = cluster)) +
+d3 <- ggplot(set14_otherc, aes(age, cluster, fill = cluster)) +
         geom_col() +
         labs(title = "age", y = "", x = "") +
         scale_x_discrete(labels=c("15-24","25-44", "45-54","55+"))
-d4 <- ggplot(set14c, aes(lsm, cluster, fill = cluster)) +
+d4 <- ggplot(set14_otherc, aes(lsm, cluster, fill = cluster)) +
         geom_col() +
         labs(title = "lsm", y = "", x = "") +
         scale_x_discrete(labels=c("1-2", "3-4", "5-6", "7-8", "9-10"))
@@ -147,19 +151,19 @@ jpeg('typeDemogPlots1_14.jpeg', quality = 100, type = "cairo")
 grid.arrange(d1, d2, d3, d4, ncol=2, nrow = 2)
 dev.off()
 
-d5 <- ggplot(set14c, aes(sex, cluster, fill = cluster)) +
+d5 <- ggplot(set14_otherc, aes(sex, cluster, fill = cluster)) +
         geom_col() +
         labs(title = "gender", y = "", x = "") +
         scale_x_discrete(labels=c("male", "female"))
-d6 <- ggplot(set14c, aes(hh_inc, cluster, fill = cluster)) +
+d6 <- ggplot(set14_otherc, aes(hh_inc, cluster, fill = cluster)) +
         geom_col() +
         labs(title = "household income", y = "", x = "") +
         scale_x_discrete(labels=c("<5000","5000-10999","11000-19999",">=20000"))
-d7 <- ggplot(set14c, aes(lifestages, cluster, fill = cluster)) +
+d7 <- ggplot(set14_otherc, aes(lifestages, cluster, fill = cluster)) +
         geom_col() +
         labs(title = "lifestages", y = "", x = "")# +
 # scale_x_discrete(labels=c("<5000","5000-10999","11000-19999",">=20000"))
-d8 <- ggplot(set14c, aes(lifestyle, cluster, fill = cluster)) +
+d8 <- ggplot(set14_otherc, aes(lifestyle, cluster, fill = cluster)) +
         geom_col() +
         labs(title = "lifestyle", y = "", x = "")# +
 # scale_x_discrete(labels=c("<5000","5000-10999","11000-19999",">=20000"))
@@ -177,7 +181,7 @@ dev.off()
 
 # 1st create a subset to ensure easier running
 set.seed(56)
-sub14 <- set14[sample(nrow(set14), size = 1000),]
+sub14 <- set14_other[sample(nrow(set14_other), size = 1000),]
 
 # distance matrix and MDS
 sub14_dist <- dist(sub14[,c("newspapers","magazines","radio", "tv", "internet")])
@@ -235,9 +239,9 @@ plot(som_sub, type = "mapping", bgcol = sub14$cluster ) # not very good organisi
 # create training and test sets:
 
 set.seed(56)
-ind_train <- createDataPartition(set14$cluster, p = 0.7, list = FALSE)
-training <- set14[ind_train,]
-testing <- set14[-ind_train,]
+ind_train <- createDataPartition(set14_other$cluster, p = 0.7, list = FALSE)
+training <- set14_other[ind_train,]
+testing <- set14_other[-ind_train,]
 
 # # using random forest:
 forest14_type <- randomForest(cluster ~ newspapers
@@ -305,7 +309,7 @@ confusionMatrix(pred_lda14_demogr$class, testing$cluster)
 # consider a single tree partitioning to try to add meaning to the six clusters
 control <- rpart.control(maxdepth = 4, cp = 0.001)
 tree14 <- rpart(cluster ~ newspapers + tv + radio + magazines + internet, 
-                data = set14,
+                data = set14_other,
                 control = control) # weights = pwgt
 par(mfrow = c(1,1))
 plot(tree14, uniform = TRUE, margin = 0.2)
@@ -314,5 +318,5 @@ text(tree14, pretty = 0, cex = 0.8)
 # for more detail
 rpart.plot(tree14, type = 4, extra = 1, cex = 0.5)
 
-percentile <- ecdf(set14$internet)
+percentile <- ecdf(set14_other$internet)
 percentile(1.4)
