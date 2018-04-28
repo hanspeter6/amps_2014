@@ -19,7 +19,7 @@ library(ggplot2)
 
 #  read in datasets
 set14 <- readRDS("set14.rds")
-# set14_simple <- readRDS("set14_simple.rds")
+set14_simple <- readRDS("set14_simple.rds")
 
 
 # consider some correlations
@@ -61,109 +61,113 @@ kmeans14 <- kmeans(set14[,c("newspapers","magazines","radio", "tv", "internet", 
                    centers = 4,
                    nstart = 5,
                    iter.max = 100)
-# set.seed(123)
-# kmeans14_simple <- kmeans(set14_simple[,c("newspapers","magazines","radio", "tv", "internet", "all")],
-#                           centers = 4,
-#                           nstart = 20)
-
-# iteration to align colours/numers with 2012 sets
-table(kmeans14$cluster) # come back to this.
+set.seed(123)
+kmeans14_simple <- kmeans(set14_simple[,c("newspapers","magazines","radio", "tv", "internet", "all")],
+                          centers = 4,
+                          nstart = 5,
+                          iter.max = 100)
 
 # Comparing 2014 with 2012... will change colours if necessary to reflect meaning based on 2012:
 
-# green becomes lilac:  2 to 4
-# lilac becomes blue: 4 to 3
-# blue becomes red: 3 to 1
-# red becomes green: 1 to 2
-kmeans14$cluster <- ifelse(kmeans14$cluster == 1, 7, kmeans14$cluster)
-kmeans14$cluster <- ifelse(kmeans14$cluster == 2, 9, kmeans14$cluster)
-kmeans14$cluster <- ifelse(kmeans14$cluster == 3, 6, kmeans14$cluster)
-kmeans14$cluster <- ifelse(kmeans14$cluster == 4, 8, kmeans14$cluster)
-kmeans14$cluster <- kmeans14$cluster - 5
+# green to green:  2 to 2
+# lilac to blue: 4 to 3
+# blue to lilac: 3 to 4
+# red to red: 1 to 1
+kmeans14_simple$cluster <- ifelse(kmeans14_simple$cluster == 1, 6, kmeans14_simple$cluster)
+kmeans14_simple$cluster <- ifelse(kmeans14_simple$cluster == 2, 7, kmeans14_simple$cluster)
+kmeans14_simple$cluster <- ifelse(kmeans14_simple$cluster == 3, 9, kmeans14_simple$cluster)
+kmeans14_simple$cluster <- ifelse(kmeans14_simple$cluster == 4, 8, kmeans14_simple$cluster)
+kmeans14_simple$cluster <- kmeans14_simple$cluster - 5
 
 # add cluster labels to the dataset
 set14c <- set14 %>%
         mutate(cluster = factor(kmeans14$cluster)) %>%
         dplyr::select(qn, pwgt, cluster, everything())
-# 
+set14c_simple <- set14_simple %>%
+        mutate(cluster = factor(kmeans14_simple$cluster)) %>%
+        dplyr::select(qn, pwgt, cluster, everything())
 
 saveRDS(set14c, "set14c.rds")
+saveRDS(set14c_simple, "set14c_simple.rds")
 
-set14c <- readRDS("set14_otherc.rds")
+set14c <- readRDS("set14c.rds")
+set14c_simple <- readRDS("set14c_simple.rds")
 
 
 # some plots
 # boxplots of clusters and media types
-p1 <- ggplot(set14c, aes(cluster, all, fill = cluster)) +
+p1 <- ggplot(set14c_simple, aes(cluster, all, fill = cluster)) +
         geom_boxplot() +
         guides(fill = FALSE) +
         labs(title = "all")
-p2 <- ggplot(set14c, aes(cluster, newspapers, fill = cluster)) +
+p2 <- ggplot(set14c_simple, aes(cluster, newspapers, fill = cluster)) +
         geom_boxplot() +
         guides(fill = FALSE) +
         labs(title = "newspapers")
-p3 <- ggplot(set14c, aes(cluster, magazines, fill = cluster)) +
+p3 <- ggplot(set14c_simple, aes(cluster, magazines, fill = cluster)) +
         geom_boxplot() +
         guides(fill = FALSE) +
         labs(title = "magazines")
-p4 <- ggplot(set14c, aes(cluster, radio, fill = cluster)) +
+p4 <- ggplot(set14c_simple, aes(cluster, radio, fill = cluster)) +
         geom_boxplot() +
         guides(fill = FALSE) +
         labs(title = "radio")
-p5 <- ggplot(set14c, aes(cluster, tv, fill = cluster)) +
+p5 <- ggplot(set14c_simple, aes(cluster, tv, fill = cluster)) +
         geom_boxplot() +
         guides(fill = FALSE) +
         labs(title = "tv")
-p6 <- ggplot(set14c, aes(cluster, internet, fill = cluster)) +
+p6 <- ggplot(set14c_simple, aes(cluster, internet, fill = cluster)) +
         geom_boxplot() +
         guides(fill = FALSE) +
         labs(title = "internet")
 
-jpeg('typeBoxPlots_14.jpeg', quality = 100, type = "cairo")
+jpeg('typeBoxPlots_14_simpe.jpeg', quality = 100, type = "cairo")
 grid.arrange(p1, p2, p3, p4, p5,p6,  ncol=3, nrow = 2)
 dev.off()
 
 # try to make sense of demographics
-d1 <- ggplot(set14c, aes(race, cluster, fill = cluster)) +
+d1 <- ggplot(set14c_simple, aes(race, cluster, fill = cluster)) +
         geom_col() +
         labs(title = "race", y = "", x = "") +
         scale_x_discrete(labels=c("black", "coloured", "indian", "white"))
-d2 <- ggplot(set14c, aes(edu, cluster, fill = cluster)) +
+d2 <- ggplot(set14c_simple, aes(edu, cluster, fill = cluster)) +
         geom_col() +
         labs(title = "education", y = "", x = "") +
         scale_x_discrete(labels=c("<matric", "matric",">matric"))
-d3 <- ggplot(set14c, aes(age, cluster, fill = cluster)) +
+d3 <- ggplot(set14c_simple, aes(age, cluster, fill = cluster)) +
         geom_col() +
         labs(title = "age", y = "", x = "") +
         scale_x_discrete(labels=c("15-24","25-44", "45-54","55+"))
-d4 <- ggplot(set14c, aes(lsm, cluster, fill = cluster)) +
+d4 <- ggplot(set14c_simple, aes(lsm, cluster, fill = cluster)) +
         geom_col() +
         labs(title = "lsm", y = "", x = "") +
         scale_x_discrete(labels=c("1-2", "3-4", "5-6", "7-8", "9-10"))
 
-jpeg('typeDemogPlots1_14.jpeg', quality = 100, type = "cairo")
+jpeg('typeDemogPlots1_14_simple.jpeg', quality = 100, type = "cairo")
 grid.arrange(d1, d2, d3, d4, ncol=2, nrow = 2)
 dev.off()
 
-d5 <- ggplot(set14c, aes(sex, cluster, fill = cluster)) +
+d5 <- ggplot(set14c_simple, aes(sex, cluster, fill = cluster)) +
         geom_col() +
         labs(title = "gender", y = "", x = "") +
         scale_x_discrete(labels=c("male", "female"))
-d6 <- ggplot(set14c, aes(hh_inc, cluster, fill = cluster)) +
+d6 <- ggplot(set14c_simple, aes(hh_inc, cluster, fill = cluster)) +
         geom_col() +
         labs(title = "household income", y = "", x = "") +
         scale_x_discrete(labels=c("<5000","5000-10999","11000-19999",">=20000"))
-d7 <- ggplot(set14c, aes(lifestages, cluster, fill = cluster)) +
+d7 <- ggplot(set14c_simple, aes(lifestages, cluster, fill = cluster)) +
         geom_col() +
         labs(title = "lifestages", y = "", x = "")# +
 # scale_x_discrete(labels=c("<5000","5000-10999","11000-19999",">=20000"))
-d8 <- ggplot(set14c, aes(lifestyle, cluster, fill = cluster)) +
+d8 <- ggplot(set14c_simple, aes(lifestyle, cluster, fill = cluster)) +
         geom_col() +
         labs(title = "lifestyle", y = "", x = "")# +
 # scale_x_discrete(labels=c("<5000","5000-10999","11000-19999",">=20000"))
-jpeg('typeDemogPlots2_14.jpeg', quality = 100, type = "cairo")
+jpeg('typeDemogPlots2_14_simple.jpeg', quality = 100, type = "cairo")
 grid.arrange(d5, d6, d7, d8, ncol=2, nrow = 2)
 dev.off()
+
+
 
 
 
