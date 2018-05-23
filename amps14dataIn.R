@@ -423,7 +423,24 @@ media_vehicles_14_simple <- readRDS('media_vehicles_14_simple.rds')
 ## 4th Demographics Set (see notes for descriptions)
 
 age <- personal_14[,'ca56co34']
+age_actual <- personal_14[,'ca56co36'] # actual age..note some 999 = refusal or dont know
+
 sex <- demogrs_14[,'ca91co51a']
+
+edu_alt <- personal_14[,'ca56co39'] # gives more sensible and additional level
+# 1	No schooling	214	 0.8%
+# 2	Some primary school	670	 2.6%
+# 3	Primary school completed	1083	 4.2%
+# 4	Some high school	9063	 35.4%
+# 5	Matric (Grade 12)	9204	 36.0%
+# 6	Artisan's certificate obtained	778	 3.0%
+# 7	Technikon diploma	2224	 8.7%
+# 8	University degree completed	1471	 5.7%
+# 9	Professional	535	 2.1%
+# 10	Technical	199	 0.8%
+# 11	Secretarial	143	 0.6%
+# 12	other
+
 edu <- demogrs_14[,'ca91co48']
 for(i in 1: length(edu)) {
         if(edu[i] %in% c(6,7)) {
@@ -433,7 +450,59 @@ for(i in 1: length(edu)) {
                 edu[i] <- 6
         }
 }
+
 hh_inc <- demogrs_14[,'ca91co50']
+
+# more levels for numeric treatment later on
+hh_inc1 <- personal_14[,'ca57co57'] # 1 - 9
+hh_inc2 <- personal_14[,'ca57co58'] # 0 - 9 == 10 - 19
+hh_inc3 <- personal_14[,'ca57co59'] # 0 - 9 == 20 - 29
+hh_inc4 <- personal_14[,'ca57co60'] # 0 - 1 == 30 - 31
+
+hh_bind <- cbind.data.frame(hh_inc1,(10 + hh_inc2), (20 + hh_inc3),(30 + hh_inc4) )
+hh_bind[is.na(hh_bind)] <- 0
+hh_inc_alt <- rowSums(hh_bind)
+
+#' #'ca57co57'
+#' 1	R 1 - 499	126	 7.5%
+#' 2	R 500 - 599	78	 4.6%
+#' 3	R 600 - 699	103	 6.1%
+#' 4	R 700 - 799	69	 4.1%
+#' 5	R 800 - 899	84	 5.0%
+#' 6	R 900 - 999	101	 6.0%
+#' 7	R 1 000 - 1 099	241	 14.3%
+#' 8	R 1 100 - 1 199	90	 5.3%
+#' 9	R 1 200 - 1 399	795	 47.1%
+
+#' #'ca57co58'
+#' 0	R 1400 - 1599	321	 2.9%
+#' 1	R 1 600 - 1 999	379	 3.5%
+#' 2	R 2 000 - 2 499	853	 7.8%
+#' 3	R 2 500 - 2 999	1036	 9.5%
+#' 4	R 3 000 - 3 999	1803	 16.5%
+#' 5	R 4 000 - 4 999	1546	 14.2%
+#' 6	R 5 000 - 5 999	1435	 13.2%
+#' 7	R 6 000 - 6 999	1301	 11.9%
+#' 8	R 7 000 - 7 999	1045	 9.6%
+#' 9	R 8 000 - 8 999	1177	 10.8%
+#
+#' #'ca57co59'
+#' 0	R 9 000 - 9 999	813	 6.8%
+#' 1	R 10 000 - 10 999	1340	 11.2%
+#' 2	R 11 000 - 11 999	579	 4.9%
+#' 3	R 12 000 - 13 999	1147	 9.6%
+#' 4	R 14 000 - 15 999	1396	 11.7%
+#' 5	R 16 000 - 19 999	1466	 12.3%
+#' 6	R 20 000 - 24 999	1786	 15.0%
+#' 7	R 25 000 - 29 999	1293	 10.8%
+#' 8	R 30 000 - 39 999	1215	 10.2%
+#' 9	R 40 000 - 49 999	892	 7.5%
+#
+#' #'ca57co60'
+#' 0	R 50 0000+	468	 43.6%
+#' 1	No personal income	606	 56.4%
+#' 2	Refused	0	 0.0%
+
 race <- demogrs_14[,'ca91co51b']
 province <- demogrs_14[,'ca91co56']
 metro1 <- demogrs_14[,'ca91co57']
@@ -528,9 +597,12 @@ table(attitudes) # check
 demographics_14 <- data.frame(qn = demogrs_14$qn,
                               pwgt = demogrs_14$pwgt,
                               age,
+                              # age_actual,
                               sex,
                               edu,
+                              # edu_alt,
                               hh_inc,
+                              # hh_inc_alt
                               race,
                               province,
                               metro,
